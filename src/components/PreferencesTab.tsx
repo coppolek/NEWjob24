@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { Bell, Search, MapPin, CheckCircle2 } from 'lucide-react';
+import { Bell, Search, MapPin, CheckCircle2, Briefcase, ExternalLink, Calendar } from 'lucide-react';
+import { checkNewJobsMatchingPreferences } from '../lib/jobAlerts';
 
 export default function PreferencesTab() {
   const { user, signIn } = useAuth();
@@ -18,6 +19,9 @@ export default function PreferencesTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [matchingJobs, setMatchingJobs] = useState<any[]>([]);
+  const [isCheckingJobs, setIsCheckingJobs] = useState(false);
 
   useEffect(() => {
     async function loadPreferences() {
@@ -34,6 +38,11 @@ export default function PreferencesTab() {
             frequency: data.frequency || 'daily',
             emailAlerts: data.emailAlerts !== undefined ? data.emailAlerts : true
           });
+          
+          // Check for new jobs immediately based on loaded preferences
+          if (data.keyword || data.location) {
+            checkJobs(data.keyword || '', data.location || '');
+          }
         }
       } catch (err: any) {
         console.error("Error loading preferences:", err);
@@ -44,6 +53,18 @@ export default function PreferencesTab() {
     
     loadPreferences();
   }, [user]);
+
+  const checkJobs = async (keyword: string, location: string) => {
+    setIsCheckingJobs(true);
+    try {
+      const jobs = await checkNewJobsMatchingPreferences(keyword, location);
+      setMatchingJobs(jobs);
+    } catch (error) {
+      console.error("Failed to check jobs", error);
+    } finally {
+      setIsCheckingJobs(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +81,9 @@ export default function PreferencesTab() {
         updatedAt: new Date()
       }, { merge: true });
       setIsSuccess(true);
+      
+      // Also check jobs immediately after updating preferences
+      checkJobs(formData.keyword, formData.location);
       
       // Hide success message after 3 seconds
       setTimeout(() => setIsSuccess(false), 3000);
@@ -205,6 +229,81 @@ export default function PreferencesTab() {
           </button>
         </div>
       </form>
+
+      {/* Sezione Nuovi Annunci / Avvisi Attivi */}
+      {(formData.keyword || formData.location) && (
+        <div className="mt-10">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <Bell className="w-5 h-5 text-[#003399]" />
+              Ultimi annunci per i tuoi avvisi
+            </h3>
+            {isCheckingJobs && (
+              <span className="text-sm text-slate-500 flex items-center gap-2">
+                <span className="animate-pulse h-2 w-2 bg-[#003399] rounded-full"></span>
+                Aggiornamento in corso...
+              </span>
+            )}
+          </div>
+
+          {!isCheckingJobs && matchingJobs.length === 0 && (
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center">
+              <Search className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <p className="text-slate-600 font-medium">Nessun nuovo annuncio trovato.</p>
+              <p className="text-sm text-slate-500 mt-1">Non appena ci saranno novità, te le mostreremo qui.</p>
+            </div>
+          )}
+
+          {matchingJobs.length > 0 && (
+            <div className="space-y-4">
+              {matchingJobs.map((job, idx) => (
+                <a 
+                  key={idx} 
+                  href={job.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block bg-white p-5 rounded-2xl border border-blue-100 shadow-sm hover:shadow hover:border-[#003399]/40 transition-all group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full bg-[#003399]"></div>
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold text-[#003399] group-hover:underline mb-1 pr-6">
+                        {job.title}
+                      </h4>
+                      <p className="text-slate-800 font-medium text-sm mb-3">{job.company}</p>
+                      
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                        {job.locations && (
+                          <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {job.locations}
+                          </div>
+                        )}
+                        {job.salary && (
+                          <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded font-medium">
+                            {job.salary}
+                          </div>
+                        )}
+                        {job.date && (
+                          <div className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded">
+                            <Calendar className="w-3.5 h-3.5" />
+                            Oggi
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <ExternalLink className="w-5 h-5 text-slate-300 group-hover:text-[#003399] flex-shrink-0" />
+                  </div>
+                </a>
+              ))}
+              
+              <p className="text-center text-sm text-slate-500 mt-6">
+                Mostrando gli ultimi 5 annunci pubblicati in linea con i tuoi filtri.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
