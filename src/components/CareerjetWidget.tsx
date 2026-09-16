@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Search, MapPin, Briefcase, Filter, ChevronDown } from 'lucide-react';
+import { Search, MapPin, Briefcase, Filter, ChevronDown, X, ExternalLink } from 'lucide-react';
 
 export default function CareerjetWidget() {
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
   
   // Filters state
   const [sort, setSort] = useState('relevance');
@@ -167,8 +168,7 @@ export default function CareerjetWidget() {
                 <a 
                   key={idx} 
                   href={job.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  onClick={(e) => { e.preventDefault(); setSelectedJob(job); }}
                   className="block bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-[#003399]/30 transition-all cursor-pointer group"
                 >
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -201,6 +201,45 @@ export default function CareerjetWidget() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Job Details Modal */}
+      {selectedJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[95vh] md:h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-3 md:p-4 border-b border-slate-100">
+              <div className="flex-1 min-w-0 pr-4">
+                <h3 className="font-bold text-base md:text-lg text-slate-900 truncate">{selectedJob.title}</h3>
+                <p className="text-xs md:text-sm text-slate-500 truncate">{selectedJob.company}</p>
+              </div>
+              <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                <a 
+                  href={selectedJob.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs md:text-sm font-medium text-[#003399] hover:bg-blue-50 px-2 py-2 md:px-3 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="hidden md:inline">Apri in un'altra scheda</span>
+                </a>
+                <button 
+                  onClick={() => setSelectedJob(null)}
+                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 md:w-6 md:h-6" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 w-full bg-slate-50 relative">
+              <iframe 
+                src={selectedJob.url} 
+                className="w-full h-full border-0"
+                title="Dettagli Annuncio"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>

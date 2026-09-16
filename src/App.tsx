@@ -4,6 +4,7 @@ import CareerjetWidget from './components/CareerjetWidget';
 import PostJobTab from './components/PostJobTab';
 import PreferencesTab from './components/PreferencesTab';
 import FaqSection from './components/FaqSection';
+import NewsletterForm from './components/NewsletterForm';
 import type { Tab } from './types';
 import { useAuth } from './lib/AuthContext';
 
@@ -297,6 +298,8 @@ export default function App() {
 
         </div>
       </main>
+
+      <NewsletterForm />
 
       {/* Language Modal */}
       {isLangModalOpen && (

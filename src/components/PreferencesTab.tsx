@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { Bell, Search, MapPin, CheckCircle2, Briefcase, ExternalLink, Calendar } from 'lucide-react';
+import { Bell, Search, MapPin, CheckCircle2, Briefcase, ExternalLink, Calendar, X } from 'lucide-react';
 import { checkNewJobsMatchingPreferences } from '../lib/jobAlerts';
 
 export default function PreferencesTab() {
@@ -22,6 +22,7 @@ export default function PreferencesTab() {
   
   const [matchingJobs, setMatchingJobs] = useState<any[]>([]);
   const [isCheckingJobs, setIsCheckingJobs] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
 
   useEffect(() => {
     async function loadPreferences() {
@@ -260,8 +261,7 @@ export default function PreferencesTab() {
                 <a 
                   key={idx} 
                   href={job.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  onClick={(e) => { e.preventDefault(); setSelectedJob(job); }}
                   className="block bg-white p-5 rounded-2xl border border-blue-100 shadow-sm hover:shadow hover:border-[#003399]/40 transition-all group relative overflow-hidden"
                 >
                   <div className="absolute top-0 left-0 w-1 h-full bg-[#003399]"></div>
@@ -302,6 +302,45 @@ export default function PreferencesTab() {
               </p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Job Details Modal */}
+      {selectedJob && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[95vh] md:h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-3 md:p-4 border-b border-slate-100">
+              <div className="flex-1 min-w-0 pr-4">
+                <h3 className="font-bold text-base md:text-lg text-slate-900 truncate">{selectedJob.title}</h3>
+                <p className="text-xs md:text-sm text-slate-500 truncate">{selectedJob.company}</p>
+              </div>
+              <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                <a 
+                  href={selectedJob.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs md:text-sm font-medium text-[#003399] hover:bg-blue-50 px-2 py-2 md:px-3 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="hidden md:inline">Apri in un'altra scheda</span>
+                </a>
+                <button 
+                  onClick={() => setSelectedJob(null)}
+                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 md:w-6 md:h-6" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 w-full bg-slate-50 relative">
+              <iframe 
+                src={selectedJob.url} 
+                className="w-full h-full border-0"
+                title="Dettagli Annuncio"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
