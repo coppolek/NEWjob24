@@ -1,0 +1,6 @@
+{
+  "name": "CareerPortal",
+  "description": "Portale completo per la ricerca di lavoro con widget Careerjet, filtri avanzati e notifiche.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

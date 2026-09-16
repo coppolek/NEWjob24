@@ -1,0 +1,64 @@
+{
+  "rulesVersion": "2",
+  "entities": [
+    {
+      "name": "users",
+      "description": "User profiles",
+      "fields": [
+        { "name": "uid", "type": "string", "description": "Auth UID" },
+        { "name": "email", "type": "string", "description": "User email address" },
+        { "name": "displayName", "type": "string", "description": "User full name" },
+        { "name": "photoURL", "type": "string", "description": "User avatar URL" },
+        { "name": "createdAt", "type": "timestamp", "description": "Time of account creation" }
+      ],
+      "access": {
+        "create": "if request.auth != null && request.auth.uid == userId",
+        "read": "if request.auth != null && request.auth.uid == userId",
+        "update": "if request.auth != null && request.auth.uid == userId",
+        "delete": "if false"
+      },
+      "collections": []
+    },
+    {
+      "name": "filters",
+      "description": "User search filters and preferences",
+      "fields": [
+        { "name": "userId", "type": "string", "description": "Auth UID" },
+        { "name": "keywords", "type": "string", "description": "Job keywords" },
+        { "name": "includeSynonyms", "type": "boolean", "description": "Include synonyms" },
+        { "name": "exactTitles", "type": "boolean", "description": "Exact titles only" },
+        { "name": "location", "type": "string", "description": "Location" },
+        { "name": "radius", "type": "string", "description": "Search radius" },
+        { "name": "remote", "type": "boolean", "description": "Include remote" },
+        { "name": "frequency", "type": "string", "description": "Notification frequency" },
+        { "name": "updatedAt", "type": "timestamp", "description": "Last update time" }
+      ],
+      "access": {
+        "create": "if request.auth != null && request.auth.uid == request.resource.data.userId",
+        "read": "if request.auth != null && request.auth.uid == resource.data.userId",
+        "update": "if request.auth != null && request.auth.uid == resource.data.userId && request.auth.uid == request.resource.data.userId",
+        "delete": "if request.auth != null && request.auth.uid == resource.data.userId"
+      }
+    },
+    {
+      "name": "notifications",
+      "description": "User notifications",
+      "fields": [
+        { "name": "userId", "type": "string", "description": "Auth UID" },
+        { "name": "title", "type": "string", "description": "Notification title" },
+        { "name": "company", "type": "string", "description": "Company name" },
+        { "name": "location", "type": "string", "description": "Job location" },
+        { "name": "time", "type": "string", "description": "Time description" },
+        { "name": "read", "type": "boolean", "description": "Is read" },
+        { "name": "type", "type": "string", "description": "Notification type (alert, match, view)" },
+        { "name": "createdAt", "type": "timestamp", "description": "Creation timestamp" }
+      ],
+      "access": {
+        "create": "if false",
+        "read": "if request.auth != null && request.auth.uid == resource.data.userId",
+        "update": "if request.auth != null && request.auth.uid == resource.data.userId && request.auth.uid == request.resource.data.userId",
+        "delete": "if request.auth != null && request.auth.uid == resource.data.userId"
+      }
+    }
+  ]
+}
