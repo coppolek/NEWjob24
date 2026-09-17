@@ -332,6 +332,22 @@ export default function PreferencesTab() {
                 </button>
               </div>
             </div>
+            
+            {/* Banner Promozionale nella Scheda Annuncio */}
+            <div className="bg-gradient-to-r from-[#003399] to-blue-600 px-4 py-3 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner shrink-0">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <span className="bg-white/20 p-2 rounded-lg shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 10.5 8 13l2 2.5"/><path d="m14 10.5 2 2.5-2 2.5"/></svg>
+                </span>
+                <p className="text-sm font-medium text-left">
+                  <span className="font-bold text-blue-100">Potenzia il tuo CV!</span> Ottieni una revisione gratuita dai nostri esperti prima di candidarti.
+                </p>
+              </div>
+              <button className="w-full sm:w-auto whitespace-nowrap text-xs md:text-sm bg-white text-[#003399] px-4 py-2 rounded-lg font-bold hover:bg-blue-50 transition-colors shadow-sm">
+                Scopri come
+              </button>
+            </div>
+
             <div className="flex-1 w-full bg-slate-50 relative">
               <iframe 
                 src={selectedJob.url} 
