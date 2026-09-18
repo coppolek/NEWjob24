@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Search, Bell, SlidersHorizontal, UserCircle, LogOut, LogIn, AlertCircle, X, MapPin, Quote } from 'lucide-react';
+import { Search, Bell, SlidersHorizontal, UserCircle, LogOut, LogIn, AlertCircle, X, MapPin, Quote, UserPlus } from 'lucide-react';
 import CareerjetWidget from './components/CareerjetWidget';
 import PostJobTab from './components/PostJobTab';
 import PreferencesTab from './components/PreferencesTab';
+import RegisterTab from './components/RegisterTab';
 import FaqSection from './components/FaqSection';
 import NewsletterForm from './components/NewsletterForm';
 import type { Tab } from './types';
@@ -17,6 +18,7 @@ export default function App() {
   const navItems: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'search', label: 'Cerca Lavoro', icon: <Search className="w-4 h-4" /> },
     { id: 'preferences', label: 'Avvisi', icon: <Bell className="w-4 h-4" /> },
+    { id: 'register', label: 'Iscriviti', icon: <UserPlus className="w-4 h-4" /> },
   ];
 
   const handleLanguageSelect = (lang: string) => {
@@ -97,8 +99,17 @@ export default function App() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2 pl-2 border-l border-transparent sm:border-slate-200">
-                  <button onClick={signIn} className="text-[#003399] hover:bg-blue-50 text-sm font-semibold transition-colors px-4 py-2 rounded-lg">
+                  <button 
+                    onClick={signIn} 
+                    className="text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-sm font-semibold transition-colors px-3 py-2 rounded-lg"
+                  >
                     Accedi
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('register')} 
+                    className="bg-[#003399] hover:bg-blue-800 text-white text-sm font-semibold transition-colors px-4 py-2 rounded-lg shadow-xs"
+                  >
+                    Iscriviti
                   </button>
                 </div>
               )}
@@ -161,7 +172,7 @@ export default function App() {
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto">
           
           <div className={activeTab === 'search' ? 'block' : 'hidden'}>
-            <CareerjetWidget />
+            <CareerjetWidget onNavigateToRegister={() => { setActiveTab('register'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
             
             {/* CTA Section for unauthenticated users */}
             {!loading && !user && (
@@ -293,7 +304,11 @@ export default function App() {
           </div>
 
           <div className={activeTab === 'preferences' ? 'block' : 'hidden'}>
-            <PreferencesTab />
+            <PreferencesTab onNavigateToRegister={() => { setActiveTab('register'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+          </div>
+
+          <div className={activeTab === 'register' ? 'block' : 'hidden'}>
+            <RegisterTab onNavigateToSearch={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
           </div>
 
         </div>

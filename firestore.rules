@@ -25,5 +25,12 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
       allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
+    match /newsletter_subscribers/{subscriberId} {
+      allow create: if true;
+    }
+    match /cv_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
   }
 }

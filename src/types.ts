@@ -1,4 +1,4 @@
-export type Tab = 'search' | 'notifications' | 'filters' | 'post-job' | 'preferences';
+export type Tab = 'search' | 'notifications' | 'filters' | 'post-job' | 'preferences' | 'register';
 
 export interface Notification {
   id: string;
