@@ -1,21 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Search, Bell, SlidersHorizontal, UserCircle, LogOut, LogIn, AlertCircle, X, MapPin, Quote, UserPlus } from 'lucide-react';
 import CareerjetWidget from './components/CareerjetWidget';
 import PostJobTab from './components/PostJobTab';
 import PreferencesTab from './components/PreferencesTab';
 import RegisterTab from './components/RegisterTab';
+import JobModal from './components/JobModal';
 import FaqSection from './components/FaqSection';
 import NewsletterForm from './components/NewsletterForm';
 import type { Tab } from './types';
 import { useAuth } from './lib/AuthContext';
+import { parsePuulpJobFromUrl, type SharedJob } from './lib/shareUrl';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('search');
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('IT Paese e lingua');
+  const [urlSharedJob, setUrlSharedJob] = useState<SharedJob | null>(null);
   const { user, signIn, signOut, loading, error, clearError } = useAuth();
 
-  const navItems: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] = [
+  // Controlla se l'utente ha aperto un link condiviso di Puulp con un annuncio
+  useEffect(() => {
+    const jobFromLink = parsePuulpJobFromUrl();
+    if (jobFromLink) {
+      setUrlSharedJob(jobFromLink);
+    }
+  }, []);
+
+  const handleCloseSharedJob = () => {
+    setUrlSharedJob(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('job');
+    url.searchParams.delete('jobTitle');
+    url.searchParams.delete('jobUrl');
+    url.searchParams.delete('company');
+    url.searchParams.delete('locations');
+    window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''));
+  };
+
+  const navItems: { id: Tab; label: string; icon: ReactNode; badge?: number }[] = [
     { id: 'search', label: 'Cerca Lavoro', icon: <Search className="w-4 h-4" /> },
     { id: 'preferences', label: 'Avvisi', icon: <Bell className="w-4 h-4" /> },
     { id: 'register', label: 'Iscriviti', icon: <UserPlus className="w-4 h-4" /> },
@@ -37,7 +59,7 @@ export default function App() {
             {/* Logo and primary nav */}
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('search')}>
-                <h1 className="text-2xl font-bold tracking-tighter" style={{ color: '#003399' }}>CareerPortal</h1>
+                <h1 className="text-2xl font-bold tracking-tighter" style={{ color: '#003399' }}>Puulp</h1>
               </div>
               
               <nav className="hidden md:flex space-x-1 h-full items-center">
@@ -178,7 +200,7 @@ export default function App() {
             {!loading && !user && (
               <div className="mt-20 mb-16 flex flex-col items-center text-center">
                 <h2 className="text-[2.5rem] md:text-5xl font-bold tracking-tighter mb-6" style={{ color: '#003399' }}>
-                  CareerPortal
+                  Puulp
                 </h2>
                 
                 <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
@@ -200,7 +222,7 @@ export default function App() {
                 </button>
                 
                 <div className="mt-20 flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800 cursor-pointer transition-colors">
-                  <span className="font-medium text-sm">Tendenze su CareerPortal</span>
+                  <span className="font-medium text-sm">Tendenze su Puulp</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -222,13 +244,13 @@ export default function App() {
                       onClick={() => {
                         if (navigator.share) {
                           navigator.share({
-                            title: 'CareerPortal - Storie di Successo',
-                            text: 'Scopri come tanti professionisti hanno trovato il lavoro dei sogni su CareerPortal!',
-                            url: window.location.href,
+                            title: 'Puulp - Storie di Successo',
+                            text: 'Scopri come tanti professionisti hanno trovato il lavoro dei sogni su Puulp!',
+                            url: window.location.origin,
                           }).catch(console.error);
                         } else {
-                          navigator.clipboard.writeText(window.location.href);
-                          alert('Link copiato negli appunti!');
+                          navigator.clipboard.writeText(window.location.origin);
+                          alert('Link di Puulp copiato negli appunti!');
                         }
                       }}
                       className="flex items-center gap-2 bg-blue-50 text-[#003399] hover:bg-blue-100 px-5 py-2.5 rounded-full font-medium transition-colors border border-blue-100"
@@ -252,7 +274,7 @@ export default function App() {
                         </div>
                       </div>
                       <p className="text-slate-700 leading-relaxed relative z-10 text-sm">
-                        "CareerPortal ha reso la mia ricerca incredibilmente semplice. Ho apprezzato in particolare gli avvisi personalizzati che mi hanno permesso di candidarmi per prima alle posizioni migliori."
+                        "Puulp ha reso la mia ricerca incredibilmente semplice. Ho apprezzato in particolare gli avvisi personalizzati che mi hanno permesso di candidarmi per prima alle posizioni migliori."
                       </p>
                     </div>
 
@@ -315,6 +337,19 @@ export default function App() {
       </main>
 
       <NewsletterForm />
+
+      {/* Modal di dettaglio annuncio aperto direttamente da link Puulp */}
+      {urlSharedJob && (
+        <JobModal
+          job={urlSharedJob}
+          onClose={handleCloseSharedJob}
+          onRegister={() => {
+            handleCloseSharedJob();
+            setActiveTab('register');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+      )}
 
       {/* Language Modal */}
       {isLangModalOpen && (

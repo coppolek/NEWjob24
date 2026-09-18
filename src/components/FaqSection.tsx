@@ -34,7 +34,7 @@ export default function FaqSection() {
           Domande Frequenti
         </h3>
         <p className="text-slate-600">
-          Tutto quello che ti serve sapere per sfruttare al meglio CareerPortal.
+          Tutto quello che ti serve sapere per sfruttare al meglio Puulp.
         </p>
       </div>
 

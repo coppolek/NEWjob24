@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -25,7 +25,7 @@ export default function RegisterTab({ onNavigateToSearch }: RegisterTabProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formData.email) {
       setError('Inserisci un indirizzo email valido.');
@@ -78,7 +78,7 @@ export default function RegisterTab({ onNavigateToSearch }: RegisterTabProps) {
           Iscrizione & Potenziamento Carriera
         </span>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Iscriviti a CareerPortal
+          Iscriviti a Puulp
         </h2>
         <p className="text-slate-600 mt-3 text-base sm:text-lg max-w-xl mx-auto">
           Crea il tuo profilo gratuito, richiedi la <strong>revisione gratuita del tuo CV</strong> con i nostri specialisti HR e ricevi le migliori opportunità su misura.

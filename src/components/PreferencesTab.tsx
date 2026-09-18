@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { Bell, Search, MapPin, CheckCircle2 } from 'lucide-react';
+import { Bell, Search, MapPin, CheckCircle2, Calendar, ExternalLink } from 'lucide-react';
 import { checkNewJobsMatchingPreferences } from '../lib/jobAlerts';
 import JobModal from './JobModal';
 
@@ -72,7 +72,7 @@ export default function PreferencesTab({ onNavigateToRegister }: PreferencesTabP
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!user) return;
     
@@ -101,7 +101,7 @@ export default function PreferencesTab({ onNavigateToRegister }: PreferencesTabP
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,

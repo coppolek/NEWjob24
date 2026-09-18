@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Search, MapPin, Briefcase, Filter, ChevronDown } from 'lucide-react';
 import JobModal from './JobModal';
 
@@ -21,7 +21,7 @@ export default function CareerjetWidget({ onNavigateToRegister }: CareerjetWidge
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async (e?: React.FormEvent) => {
+  const handleSearch = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     if (!keywords && !location) return;
 

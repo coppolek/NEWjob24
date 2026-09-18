@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Mail, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -7,7 +7,7 @@ export default function NewsletterForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
@@ -83,7 +83,7 @@ export default function NewsletterForm() {
         </div>
         
         <div className="mt-12 pt-8 border-t border-slate-200 text-center flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-          <p>&copy; {new Date().getFullYear()} CareerPortal. Tutti i diritti riservati.</p>
+          <p>&copy; {new Date().getFullYear()} Puulp. Tutti i diritti riservati.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-slate-800 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-slate-800 transition-colors">Termini di Servizio</a>

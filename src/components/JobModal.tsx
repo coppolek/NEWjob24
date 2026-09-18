@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ExternalLink, MapPin, Briefcase, Calendar, DollarSign, Building2, Share2, Check, FileText } from 'lucide-react';
+import { generatePuulpJobShareUrl } from '../lib/shareUrl';
 
 interface JobModalProps {
   job: {
@@ -30,14 +31,22 @@ export default function JobModal({ job, onClose, onRegister }: JobModalProps) {
   };
 
   const handleShare = () => {
+    const puulpUrl = generatePuulpJobShareUrl(job);
+    const shareText = `Offerta di lavoro per "${job.title}" presso ${job.company || 'azienda'} su Puulp`;
+
     if (navigator.share) {
       navigator.share({
-        title: job.title,
-        text: `Offerta di lavoro: ${job.title} presso ${job.company}`,
-        url: job.url,
-      }).catch(() => {});
+        title: `${job.title} - Puulp`,
+        text: shareText,
+        url: puulpUrl,
+      }).catch(() => {
+        // Fallback su copia negli appunti se l'utente cancella la condivisione o da errore
+        navigator.clipboard.writeText(puulpUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
     } else {
-      navigator.clipboard.writeText(job.url);
+      navigator.clipboard.writeText(puulpUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
@@ -236,10 +245,11 @@ export default function JobModal({ job, onClose, onRegister }: JobModalProps) {
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               onClick={handleShare}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-sm transition-colors"
+              title="Condividi il link di Puulp a questo annuncio"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-sm transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-slate-500" />}
-              <span>{copied ? 'Link copiato!' : 'Condividi'}</span>
+              <span>{copied ? 'Link Puulp copiato!' : 'Condividi'}</span>
             </button>
             <button
               onClick={onClose}
